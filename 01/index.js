@@ -5,8 +5,13 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// Get input file from command line arguments
+const inputParam = '--input';
+const inputFile = process.argv.includes(inputParam) ? process.argv[process.argv.indexOf(inputParam) + 1] : null;
+
+// Parse the lines of the input file
 async function processLineByLine() {
-    const filePath = path.join(__dirname, 'input.txt');
+    const filePath = path.join(__dirname, inputFile);
     const fileStream = fs.createReadStream(filePath);
 
     const rl = readline.createInterface({
