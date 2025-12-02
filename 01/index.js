@@ -9,21 +9,25 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const inputParam = '--input';
 const inputFile = process.argv.includes(inputParam) ? process.argv[process.argv.indexOf(inputParam) + 1] : null;
 
-// Parse the lines of the input file
-async function processLineByLine() {
-    const filePath = path.join(__dirname, inputFile);
-    const fileStream = fs.createReadStream(filePath);
+// Split the input into lines
+const filePath = path.join(__dirname, inputFile);
+const fileStream = fs.createReadStream(filePath);
+const rl = readline.createInterface({
+    input: fileStream,
+    crlfDelay: Infinity
+});
 
-    const rl = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity
-    });
+let password = 0;
+let currentValue = 50;
 
-    let total = 0;
+// Process each line of the input
+rl.on('line', (line) => {
+    const mult = line.charAt(0) === 'R' ? 1 : -1;
+    const value = parseInt(line.substring(1));
+    currentValue = (currentValue + mult * value) % 100;
 
-    for await (const line of rl) {
-       console.log(line);
-    }
-}
+    if (currentValue === 0) password ++;
+});
 
-processLineByLine();
+// Output the result
+rl.on('close', () => console.log(`Password: ${password}`));
