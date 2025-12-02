@@ -4,4 +4,5 @@
 **Run my script**
 ```
 node 01/index.js --input "input.txt"
+node 01/index.js --input "input.txt" --part-two
 ```
