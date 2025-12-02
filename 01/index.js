@@ -24,7 +24,14 @@ const processPartOne = (line, currentValue) => {
     const mult = line.charAt(0) === 'R' ? 1 : -1;
     const value = parseInt(line.substring(1));
     
-    let val = (currentValue + mult * value) % 100;
+    let val;
+
+    if (mult > 0) {
+        val = (currentValue + mult * value) % 100;
+    } else {
+        val = (currentValue + 100 - (value % 100)) % 100;
+    }
+
     let psw = (currentValue === 0) ? 1 : 0;
     return { val, psw };
 }
@@ -36,15 +43,19 @@ const processPartTwo = (line, currentValue) => {
     
     let psw = 0;
     
+    if (currentValue === 0) psw --;
+
     if (currentValue + value * mult === 0) {
         psw = 1;
     } else if (mult > 0) {
-        psw = Math.floor((value + currentValue) / 100)
+        psw = Math.floor(Math.abs(value + currentValue) / 100);
     } else {
-        psw = Math.floor((currentValue - value) / 100) * -1;
+        psw = Math.floor(Math.abs(value + (100 - currentValue)) / 100);
     }
     
+    // console.log(`Line: ${line}, Current: ${currentValue}, PSW Increment: ${psw}`);
     const val = Math.abs(currentValue + mult * value) % 100;
+
     return { val, psw };
 }
 
