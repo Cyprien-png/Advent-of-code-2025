@@ -42,20 +42,20 @@ const processPartTwo = (line, currentValue) => {
     const value = parseInt(line.substring(1));
     
     let psw = 0;
+    let val;
     
-    if (currentValue === 0) psw --;
-
     if (currentValue + value * mult === 0) {
         psw = 1;
+        val = 0;
     } else if (mult > 0) {
-        psw = Math.floor(Math.abs(value + currentValue) / 100);
+        psw += Math.floor(Math.abs(value + currentValue) / 100);
+        val = (currentValue + mult * value) % 100;
     } else {
-        psw = Math.floor(Math.abs(value + (100 - currentValue)) / 100);
+        psw += Math.floor(Math.abs(value + (100 - currentValue)) / 100);
+        val = (currentValue + 100 - (value % 100)) % 100;
+        if (currentValue === 0) psw --;
     }
     
-    // console.log(`Line: ${line}, Current: ${currentValue}, PSW Increment: ${psw}`);
-    const val = Math.abs(currentValue + mult * value) % 100;
-
     return { val, psw };
 }
 
