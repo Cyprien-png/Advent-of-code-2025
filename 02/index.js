@@ -39,6 +39,14 @@ const setSequencesLengthsPartTwo = (start, end) => {
     return seqLen;
 }
 
+const setSubsequencesLengths = (len) => {
+    const subSeqLen = [];
+    for (let i = 1; i <= len; i++) {
+        if ((len / i) % 1 === 0 && i != 1) subSeqLen.push(i);
+    }
+    return subSeqLen;
+}
+
 rangesString.split(',').map(range => {
     const [start, end] = range.split('-').map(num => num);
     if (start.length == 1 && end.length == 1) return;
@@ -51,20 +59,24 @@ rangesString.split(',').map(range => {
 
     // Parse sequences to find their repeatable subsequences
     sequencesLengths.forEach(len => {
-        const subsequenceRepeatCount = start.length / len;
-        const startId = (len * 2 === start.length) ? start.slice(0, len) : '1' + '0'.repeat(len - 1);
-        const endId = (len * 2 === end.length) ? end.slice(0, len) : '9'.repeat(len);
 
-        if (parseInt(startId + startId) > parseInt(endId + endId)) return;
+        const subSeqLen = isPartTwo ? setSubsequencesLengths(len) : [2];
 
-        for (let i = parseInt(startId); i <= parseInt(endId); i++) {
-            const invalidId = parseInt(`${i}${i}`);
+        subSeqLen.forEach(sl => {
+            const startId = (len * sl === start.length) ? start.slice(0, len) : '1' + '0'.repeat(len - 1);
+            const endId = (len * sl === end.length) ? end.slice(0, len) : '9'.repeat(len);
 
-            // Ensure that the repeated ID sequence is within the original range
-            if (invalidId > parseInt(end)) break;
-            if (invalidId < parseInt(start)) continue;
-            sumOfIds += invalidId;
-        }
+            if (parseInt(startId + startId) > parseInt(endId + endId)) return;
+
+            for (let i = parseInt(startId); i <= parseInt(endId); i++) {
+                const invalidId = parseInt(`${i}`.repeat(sl));
+
+                // Ensure that the repeated ID sequence is within the original range
+                if (invalidId > parseInt(end)) break;
+                if (invalidId < parseInt(start)) continue;
+                sumOfIds += invalidId;
+            }
+        });
     });
 });
 
