@@ -15,18 +15,35 @@ const rangesString = fs.readFileSync(filePath, 'utf8').trim();
 
 let sumOfIds = 0;
 
-const ranges = rangesString.split(',').map(range => { 
-    const [start, end] = range.split('-').map(num => parseInt(num));
-
+rangesString.split(',').map(range => { 
+    const [start, end] = range.split('-').map(num => num);
     const sequencesLengths = [];
 
-    for(let i = start.toString().length; i <= end.toString().length; i++) {
+    // Set the all the possible lengths of sequences between start and end
+    for(let i = start.length; i <= end.length; i++) {
         if (i % 2 !== 0) continue;
         sequencesLengths.push(i / 2);
     }
 
+    // Leave if there are no sequence that allows to repeat twice the same subsequence
     if (sequencesLengths.length === 0) return;
-    return { start, end };
+
+    // Parse sequences to find their repeatable subsequences
+    sequencesLengths.forEach(len => {
+        const startId = (len*2 === start.length) ? start.slice(0, len) : '1' + '0'.repeat(len - 1);
+        const endId = (len*2 === end.length) ? end.slice(0, len) : '9'.repeat(len);        
+
+        if (parseInt(startId + startId) > parseInt(endId + endId)) return;
+  
+        for (let i = parseInt(startId); i <= parseInt(endId); i++) {
+            const invalidId = parseInt(`${i}${i}`);
+
+            // Ensure that the repeated ID sequence is within the original range
+            if (invalidId > parseInt(end)) break;
+            if (invalidId < parseInt(start)) continue;
+            sumOfIds += invalidId;
+        }
+    });
 });
 
 console.log(sumOfIds)
