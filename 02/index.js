@@ -11,6 +11,11 @@ const inputFile = process.argv.includes(inputParam) ? process.argv[process.argv.
 
 // Split the input into lines
 const filePath = path.join(__dirname, inputFile);
-const ranges = fs.readFileSync(filePath, 'utf8').trim();
+const rangesString = fs.readFileSync(filePath, 'utf8').trim();
+
+const ranges = rangesString.split(',').map(range => { 
+    const [start, end] = range.split('-').map(num => parseInt(num));
+    return { start, end };
+});
 
 console.log(ranges)
