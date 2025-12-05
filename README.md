@@ -19,4 +19,5 @@ node 02/index.js --input "input.txt"
 **Run my script**
 ```
 node 03/index.js --input "input.txt"
+node 03/index.js --input "input.txt" --part-two
 ```
