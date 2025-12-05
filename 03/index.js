@@ -23,8 +23,8 @@ let password = 0;
 // Process each line of the input
 rl.on('line', (line) => {
     const powerBank = new PowerBank(line.split(''));
-    const comb = powerBank.computeBestCombination();
-    const bankValue = parseInt(`${comb.first}${comb.second}`);
+    const comb = powerBank.computeBestCombination().join('');
+    const bankValue = parseInt(comb);
     password += bankValue;
 });
 

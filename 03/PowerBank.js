@@ -1,24 +1,31 @@
 export class PowerBank {
     batteries = [];
-    bestCombination = { first: 0, second: 0 };
+    bestCombination = [];
 
-    constructor(batteries) {
+    constructor(batteries, bestCombinationLength = 2) {
         this.batteries = batteries;
+
+        for (let i = 0; i < bestCombinationLength; i++) {
+            this.bestCombination.push(0);
+        }
     }
 
     computeBestCombination() {
         this.batteries.forEach((b, index) => {
             const bVal = parseInt(b);
+            const len = this.bestCombination.length;
 
-            if (bVal > this.bestCombination.first && index < this.batteries.length - 1) {
-                this.bestCombination.second = 0;
-                this.bestCombination.first = bVal;
-            } else if (bVal > this.bestCombination.second) {
-                this.bestCombination.second = bVal;
+            for (let i = 0; i < 2; i++) {
+                if (bVal > this.bestCombination[i] && index < (this.batteries.length - (len - i - 1))) {
+                    for (let j = i + 1; j < len; j++) {
+                        this.bestCombination[j] = 0;
+                    }
+                    this.bestCombination[i] = bVal;
+                    break;
+                }
             }
-
-            if (this.bestCombination.first === 9 && this.bestCombination.second === 9) return this.bestCombination;
         });
+       
         return this.bestCombination
     }
 }
