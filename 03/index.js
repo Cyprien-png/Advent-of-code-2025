@@ -25,6 +25,8 @@ rl.on('line', (line) => {
     const powerBank = new PowerBank(line.split(''));
     const comb = powerBank.computeBestCombination();
     const bankValue = parseInt(`${comb.first}${comb.second}`);
+    console.log(line);
+    console.log(`Bank value: ${bankValue}`);
     password += bankValue;
 });
 

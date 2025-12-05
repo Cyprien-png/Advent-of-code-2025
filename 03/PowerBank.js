@@ -7,10 +7,10 @@ export class PowerBank {
     }
 
     computeBestCombination() {
-        this.batteries.forEach((b) => {
+        this.batteries.forEach((b, index) => {
             const bVal = parseInt(b);
 
-            if (bVal > this.bestCombination.first) {
+            if (bVal > this.bestCombination.first && index < this.batteries.length - 1) {
                 this.bestCombination.second = this.bestCombination.first;
                 this.bestCombination.first = bVal;
             } else if (bVal > this.bestCombination.second) {
