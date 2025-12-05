@@ -15,7 +15,7 @@ export class PowerBank {
             const bVal = parseInt(b);
             const len = this.bestCombination.length;
 
-            for (let i = 0; i < 2; i++) {
+            for (let i = 0; i < len; i++) {
                 if (bVal > this.bestCombination[i] && index < (this.batteries.length - (len - i - 1))) {
                     for (let j = i + 1; j < len; j++) {
                         this.bestCombination[j] = 0;

@@ -9,6 +9,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Get input file from command line arguments
 const inputParam = '--input';
 const inputFile = process.argv.includes(inputParam) ? process.argv[process.argv.indexOf(inputParam) + 1] : null;
+const partTwoParam = '--part-two';
+const isPartTwo = process.argv.includes(partTwoParam);
 
 // Split the input into lines
 const filePath = path.join(__dirname, inputFile);
@@ -22,7 +24,7 @@ let password = 0;
 
 // Process each line of the input
 rl.on('line', (line) => {
-    const powerBank = new PowerBank(line.split(''));
+    const powerBank = new PowerBank(line.split(''), isPartTwo ? 12 : 2);
     const comb = powerBank.computeBestCombination().join('');
     const bankValue = parseInt(comb);
     password += bankValue;
