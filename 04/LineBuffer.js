@@ -7,11 +7,11 @@ export class LineBuffer {
     }
 
     get previousLine() {
-        return this.lines[2];
+        return this.lines[0];
     }
 
     get nextLine() {
-        return this.lines[0];
+        return this.lines[2];
     }
 
     addLine(lineString) {
@@ -19,7 +19,7 @@ export class LineBuffer {
         this.lines.unshift(line);
 
         if (this.lines.length > 3) this.lines.pop();
-        this.isProcessable = this.currentLine && this.nextLine;
+        this.isProcessable = (!!this.currentLine && !!this.nextLine);
     }
 
 }

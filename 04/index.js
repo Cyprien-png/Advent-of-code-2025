@@ -20,16 +20,18 @@ const rl = readline.createInterface({
 });
 
 let password = 0;
+let loadedLineCount = 0;
 const lb = new LineBuffer();
 
 // Process each line of the input
 rl.on('line', (line) => {
     lb.addLine(line);
+    loadedLineCount++;
     processLine();
 });
 
 const processLine = () => {
-    if (!lb.isProcessable) return;
+    if (!lb.isProcessable && loadedLineCount !== 2) return;
 
     for (let i = 0; i < lb.currentLine.length; i++) {
         if (lb.currentLine[i] !== ROLLCHAR) continue;
