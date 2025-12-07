@@ -12,6 +12,7 @@ node 01/index.js --input "input.txt" --part-two
 **Run my script**
 ```
 node 02/index.js --input "input.txt"
+node 02/index.js --input "input.txt" --part-two
 ```
 
 ### [Day 03](https://adventofcode.com/2025/day/3)
