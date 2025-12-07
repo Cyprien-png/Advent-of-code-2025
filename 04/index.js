@@ -5,11 +5,15 @@ import { fileURLToPath } from 'url';
 import { LineBuffer } from './LineBuffer.js';
 
 const ROLLCHAR = '@';
+const EMPTYCHAR = '.';
+const TMPFILENAME = 'tmpinput.txt';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Get input file from command line arguments
 const inputParam = '--input';
 const inputFile = process.argv.includes(inputParam) ? process.argv[process.argv.indexOf(inputParam) + 1] : null;
+const partTwoParam = '--part-two';
+const isPartTwo = process.argv.includes(partTwoParam);
 
 // Split the input into lines
 const filePath = path.join(__dirname, inputFile);
@@ -18,6 +22,14 @@ const rl = readline.createInterface({
     input: fileStream,
     crlfDelay: Infinity
 });
+
+if (isPartTwo) {
+    fs.writeFileSync(path.join(__dirname, TMPFILENAME), '');
+}
+
+const appendInTmpFile = (char) => {
+    fs.appendFileSync(path.join(__dirname, TMPFILENAME), char);
+}
 
 let password = 0;
 let loadedLineCount = 0;
@@ -28,13 +40,20 @@ rl.on('line', (line) => {
     lb.addLine(line);
     loadedLineCount++;
     processLine();
+    
+    if (isPartTwo) {
+        appendInTmpFile(1 + '\n');
+    }
 });
 
 const processLine = () => {
     if (!lb.isProcessable && loadedLineCount !== 2) return;
 
     for (let i = 0; i < lb.currentLine.length; i++) {
-        if (lb.currentLine[i] !== ROLLCHAR) continue;
+        if (lb.currentLine[i] !== ROLLCHAR) {
+            if (isPartTwo) appendInTmpFile(lb.currentLine[i]);
+            continue;
+        }
 
         // Set the boundaries arround the current roll
         const minIndex = (i === 0) ? 0 : i - 1;
@@ -49,6 +68,8 @@ const processLine = () => {
         }
 
         if (nearRollsCount < 4) password ++;
+        const newChar = (nearRollsCount < 4) ? EMPTYCHAR : ROLLCHAR;
+        if (isPartTwo) appendInTmpFile(newChar);
     }
 }
 
@@ -60,5 +81,12 @@ const processLastLine = () => {
 // Output the result
 rl.on('close', () => {
     processLastLine();
+    if (isPartTwo) {
+        // remove last \n in tmp file
+        const tmpFilePath = path.join(__dirname, TMPFILENAME);
+        const tmpFileContent = fs.readFileSync(tmpFilePath, 'utf8');
+        fs.writeFileSync(tmpFilePath, tmpFileContent.slice(0, -1));
+        // fs.unlinkSync(path.join(__dirname, TMPFILENAME));
+    }
     console.log(`Password: ${password}`);
 });
