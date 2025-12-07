@@ -47,25 +47,6 @@ const setSubsequencesLengths = (len) => {
     return subSeqLen;
 }
 
-
-const processPartOne = (len, sl, start, end) => {
-    let sum = 0;
-    let startId = (len * sl === start.length) ? start.slice(0, len) : '1' + '0'.repeat(len - 1);
-    let endId = (len * sl === end.length) ? end.slice(0, len) : '9'.repeat(len);
-
-    if (parseInt(startId.repeat(sl)) > parseInt(endId.repeat(sl))) return;
-
-    for (let i = parseInt(startId); i <= parseInt(endId); i++) {
-        const invalidId = parseInt(`${i}`.repeat(sl));
-
-        // Ensure that the repeated ID sequence is within the original range
-        if (invalidId > parseInt(end)) break;
-        if (invalidId < parseInt(start)) continue;
-        sum += invalidId;
-    }
-    return sum;
-}
-
 rangesString.split(',').map(range => {
     const [start, end] = range.split('-').map(num => num);
     if (start.length == 1 && end.length == 1) return;
@@ -78,36 +59,30 @@ rangesString.split(',').map(range => {
 
     // Parse sequences to find their repeatable subsequences
     sequencesLengths.forEach(len => {
-        const subSeqLen = isPartTwo ? setSubsequencesLengths(len) : [2];
+        const subSeqLen = setSubsequencesLengths(len);
 
         subSeqLen.forEach(sl => {
-            if (!isPartTwo) {
-                invalidIds.push(processPartOne(len, sl, start, end));
-            } else {
-                let startId = start.slice(0, len);
-                if (start.length < len) startId = '1' + '0'.repeat(len - 1);
-                let endId = end.slice(0, len);
-                if (end.length > len) endId = '9'.repeat(len);
+            const startId = (start.length < len) ? '1' + '0'.repeat(len - 1) : start.slice(0, len);
+            const endId = (end.length > len) ? '9'.repeat(len) : end.slice(0, len);
 
-                if (len == sl && len * 2 >= end.length) return;
+            if (isPartTwo && len == sl && len * 2 >= end.length) return;
 
-                for (let i = parseInt(startId.slice(0, sl)); i <= parseInt(endId.slice(0, sl)); i++) {
+            for (let i = parseInt(startId.slice(0, sl)); i <= parseInt(endId.slice(0, sl)); i++) {
 
-                    for (let j = start.length; j <= end.length; j++) {
-                        const repeatCount = j / (sl);
+                for (let j = start.length; j <= end.length; j++) {
+                    const repeatCount = j / (sl);
 
-                        if (repeatCount % 1 !== 0) continue;
-                        const id = i.toString().repeat(repeatCount);
-                        const invalidId = id.length === 1 ? 0 : parseInt(id);
+                    if (repeatCount % 1 !== 0) continue;
+                    const id = i.toString().repeat(repeatCount);
+                    const invalidId = id.length === 1 ? 0 : parseInt(id);
 
-                        if (invalidIds.includes(invalidId)) continue;
+                    if (invalidIds.includes(invalidId)) continue;
 
-                        // Ensure that the repeated ID sequence is within the original range
-                        if (invalidId > parseInt(end)) break;
-                        if (invalidId < parseInt(start)) continue;
+                    // Ensure that the repeated ID sequence is within the original range
+                    if (invalidId > parseInt(end)) break;
+                    if (invalidId < parseInt(start)) continue;
 
-                        invalidIds.push(invalidId);
-                    }
+                    invalidIds.push(invalidId);
                 }
             }
         });
