@@ -2,7 +2,9 @@ import * as fs from 'fs';
 import * as readline from 'readline';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { LineBuffer } from './LineBuffer.js';
 
+const ROLLCHAR = '@';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Get input file from command line arguments
@@ -18,11 +20,43 @@ const rl = readline.createInterface({
 });
 
 let password = 0;
+const lb = new LineBuffer();
 
 // Process each line of the input
 rl.on('line', (line) => {
-    console.log(line);
+    lb.addLine(line);
+    processLine();
 });
 
+const processLine = () => {
+    if (!lb.isProcessable) return;
+
+    for (let i = 0; i < lb.currentLine.length; i++) {
+        if (lb.currentLine[i] !== ROLLCHAR) continue;
+
+        // Set the boundaries arround the current roll
+        const minIndex = (i === 0) ? 0 : i - 1;
+        const maxIndex = (i === lb.currentLine.length - 1) ? i : i + 1;
+        let nearRollsCount = 0;
+
+        // Check the 3x3 area around the current roll
+        for (let j = minIndex; j <= maxIndex; j++) {
+            if (lb.previousLine && lb.previousLine[j] === ROLLCHAR) nearRollsCount++;
+            if (j !== i && lb.currentLine[j] === ROLLCHAR) nearRollsCount++;
+            if (lb.nextLine && lb.nextLine[j] === ROLLCHAR) nearRollsCount++;
+        }
+
+        if (nearRollsCount < 4) password ++;
+    }
+}
+
+const processLastLine = () => {
+    lb.addLine(null);
+    processLine();
+}
+
 // Output the result
-rl.on('close', () => console.log(`Password: ${password}`));
+rl.on('close', () => {
+    processLastLine();
+    console.log(`Password: ${password}`);
+});
