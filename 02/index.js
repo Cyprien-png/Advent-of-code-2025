@@ -14,7 +14,7 @@ const isPartTwo = process.argv.includes(partTwoParam);
 const filePath = path.join(__dirname, inputFile);
 const rangesString = fs.readFileSync(filePath, 'utf8').trim();
 
-let sumOfIds = 0;
+let invalidIds = [];
 
 // Set even sequence lengths only (part one)
 const setSequencesLengthsPartOne = (start, end) => {
@@ -42,9 +42,28 @@ const setSequencesLengthsPartTwo = (start, end) => {
 const setSubsequencesLengths = (len) => {
     const subSeqLen = [];
     for (let i = 1; i <= len; i++) {
-        if ((len / i) % 1 === 0 && i != 1) subSeqLen.push(i);
+        if ((len / i) % 1 === 0) subSeqLen.push(i);
     }
     return subSeqLen;
+}
+
+
+const processPartOne = (len, sl, start, end) => {
+    let sum = 0;
+    let startId = (len * sl === start.length) ? start.slice(0, len) : '1' + '0'.repeat(len - 1);
+    let endId = (len * sl === end.length) ? end.slice(0, len) : '9'.repeat(len);
+
+    if (parseInt(startId.repeat(sl)) > parseInt(endId.repeat(sl))) return;
+
+    for (let i = parseInt(startId); i <= parseInt(endId); i++) {
+        const invalidId = parseInt(`${i}`.repeat(sl));
+
+        // Ensure that the repeated ID sequence is within the original range
+        if (invalidId > parseInt(end)) break;
+        if (invalidId < parseInt(start)) continue;
+        sum += invalidId;
+    }
+    return sum;
 }
 
 rangesString.split(',').map(range => {
@@ -59,25 +78,42 @@ rangesString.split(',').map(range => {
 
     // Parse sequences to find their repeatable subsequences
     sequencesLengths.forEach(len => {
-
         const subSeqLen = isPartTwo ? setSubsequencesLengths(len) : [2];
 
         subSeqLen.forEach(sl => {
-            const startId = (len * sl === start.length) ? start.slice(0, len) : '1' + '0'.repeat(len - 1);
-            const endId = (len * sl === end.length) ? end.slice(0, len) : '9'.repeat(len);
+            if (!isPartTwo) {
+                invalidIds.push(processPartOne(len, sl, start, end));
+            } else {
+                let startId = start.slice(0, len);
+                if (start.length < len) startId = '1' + '0'.repeat(len - 1);
+                let endId = end.slice(0, len);
+                if (end.length > len) endId = '9'.repeat(len);
 
-            if (parseInt(startId + startId) > parseInt(endId + endId)) return;
+                if (len == sl && len * 2 >= end.length) return;
 
-            for (let i = parseInt(startId); i <= parseInt(endId); i++) {
-                const invalidId = parseInt(`${i}`.repeat(sl));
+                for (let i = parseInt(startId.slice(0, sl)); i <= parseInt(endId.slice(0, sl)); i++) {
 
-                // Ensure that the repeated ID sequence is within the original range
-                if (invalidId > parseInt(end)) break;
-                if (invalidId < parseInt(start)) continue;
-                sumOfIds += invalidId;
+                    for (let j = start.length; j <= end.length; j++) {
+                        const repeatCount = j / (sl);
+
+                        if (repeatCount % 1 !== 0) continue;
+                        const id = i.toString().repeat(repeatCount);
+                        const invalidId = id.length === 1 ? 0 : parseInt(id);
+
+                        if (invalidIds.includes(invalidId)) continue;
+
+                        // Ensure that the repeated ID sequence is within the original range
+                        if (invalidId > parseInt(end)) break;
+                        if (invalidId < parseInt(start)) continue;
+
+                        invalidIds.push(invalidId);
+                    }
+                }
             }
         });
     });
 });
+
+const sumOfIds = invalidIds.reduce((a, b) => a + b, 0);
 
 console.log(sumOfIds)
