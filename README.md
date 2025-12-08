@@ -30,3 +30,11 @@ node 03/index.js --input "input.txt" --part-two
 node 04/index.js --input "input.txt"
 node 04/index.js --input "input.txt" --part-two
 ```
+
+### [Day 05](https://adventofcode.com/2025/day/5)
+
+**Run my script**
+```
+node 05/index.js --input "input.txt"
+node 05/index.js --input "input.txt" --part-two
+```
