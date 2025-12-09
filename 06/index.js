@@ -18,10 +18,29 @@ const rl = readline.createInterface({
 });
 
 let password = 0;
+const calcs = [];
 
 // Process each line of the input
 rl.on('line', (line) => {
-   
+    const l = line.split(' ').filter(c => c !== '');
+
+    l.forEach((val, index) => {
+        const isDigit = /\d/.test(val);
+        const calcIndex = calcs[index];
+
+        if (isDigit) {
+            if (calcIndex) {
+                calcs[index] = calcIndex + " $operator ";
+            } else {
+                calcs[index] = "";
+            }
+            calcs[index] = calcs[index] + val;
+        } else {
+            calcs[index] = calcIndex.replaceAll("$operator", `${val}`);
+            password += eval(calcs[index]);
+        }
+    });
+
 });
 
 // Output the result
