@@ -33,7 +33,6 @@ const splitTachyon = (tachyonIndex, splitterIndex) => {
             currentLineTachyons.push(newIndex);
         }
     });
-    
 }
 
 // Process each line of the input
@@ -41,9 +40,17 @@ rl.on('line', (line) => {
     const l = line.split('');
 
     l.forEach((char, index) => {
-       
+        if (char === TACHYONCHAR) currentLineTachyons.push(index);
+
+        if (char === SPLITTERCHAR) {
+            currentLineTachyons.forEach((tachyonPostition, tachyonIndex) => {
+                if (tachyonPostition === index) {
+                    password++;
+                    splitTachyon(tachyonIndex, index);
+                }
+            });
+        }
     });
-    
 });
 
 // Output the result
